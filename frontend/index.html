@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartStock - Inventory Management System</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================================
+         SIDEBAR
+         ========================================= -->
+
+    <aside class="sidebar">
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                S
+            </div>
+
+            <div>
+                <h2>SmartStock</h2>
+                <span>Inventory System</span>
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav>
+
+            <a
+                href="#dashboard"
+                class="nav-item active"
+                onclick="showSection('dashboard', this)"
+            >
+                <span>▦</span>
+                Dashboard
+            </a>
+
+
+            <a
+                href="#products"
+                class="nav-item"
+                onclick="showSection('products', this)"
+            >
+                <span>📦</span>
+                Products
+            </a>
+
+
+            <a
+                href="#add-product"
+                class="nav-item"
+                onclick="openAddProductFromNav(event, this)"
+            >
+                <span>＋</span>
+                Add Product
+            </a>
+
+        </nav>
+
+
+        <!-- SIDEBAR FOOTER -->
+
+        <div class="sidebar-footer">
+
+            <p>Inventory Management</p>
+
+            <small>Flask + SQLite</small>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =========================================
+         MAIN CONTENT
+         ========================================= -->
+
+    <main
+        class="main-content"
+        id="dashboard"
+    >
+
+        <!-- HEADER -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>
+                    Inventory Dashboard
+                </h1>
+
+                <p>
+                    Manage your products and stock efficiently.
+                </p>
+
+            </div>
+
+
+            <button
+                class="add-btn"
+                onclick="openAddModal()"
+            >
+                + Add Product
+            </button>
+
+        </header>
+
+
+
+        <!-- =========================================
+             STATISTICS
+             ========================================= -->
+
+        <section class="stats-grid">
+
+            <!-- TOTAL PRODUCTS -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon products-icon">
+                    📦
+                </div>
+
+                <div>
+
+                    <p>
+                        Total Products
+                    </p>
+
+                    <h2 id="totalProducts">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- TOTAL STOCK -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon stock-icon">
+                    📊
+                </div>
+
+                <div>
+
+                    <p>
+                        Total Stock
+                    </p>
+
+                    <h2 id="totalStock">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- LOW STOCK -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon warning-icon">
+                    ⚠
+                </div>
+
+                <div>
+
+                    <p>
+                        Low Stock
+                    </p>
+
+                    <h2 id="lowStock">
+                        0
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- INVENTORY VALUE -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon value-icon">
+                    ₹
+                </div>
+
+                <div>
+
+                    <p>
+                        Inventory Value
+                    </p>
+
+                    <h2 id="inventoryValue">
+                        ₹0
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             PRODUCTS
+             ========================================= -->
+
+        <section
+            class="products-section"
+            id="products"
+        >
+
+            <!-- SECTION HEADER -->
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Products
+                    </h2>
+
+                    <p>
+                        View and manage your inventory.
+                    </p>
+
+                </div>
+
+
+                <!-- SEARCH -->
+
+                <div class="search-box">
+
+                    <span>
+                        🔍
+                    </span>
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search products..."
+                        oninput="searchProducts()"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PRODUCT TABLE -->
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Product ID
+                            </th>
+
+                            <th>
+                                Product Name
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Quantity
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="productTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="loading"
+                            >
+                                Loading products...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================================
+         ADD / EDIT PRODUCT MODAL
+         ========================================= -->
+
+    <div
+        class="modal"
+        id="productModal"
+    >
+
+        <div class="modal-content">
+
+            <!-- MODAL HEADER -->
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2 id="modalTitle">
+                        Add Product
+                    </h2>
+
+                    <p>
+                        Enter product information.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="close-btn"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+
+            <!-- FORM -->
+
+            <form id="productForm">
+
+                <!-- Hidden ID used when editing -->
+
+                <input
+                    type="hidden"
+                    id="editId"
+                >
+
+
+                <!-- PRODUCT ID -->
+
+                <div class="form-group">
+
+                    <label>
+                        Product ID
+                    </label>
+
+                    <input
+                        type="text"
+                        id="productId"
+                        placeholder="e.g. P004"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- PRODUCT NAME -->
+
+                <div class="form-group">
+
+                    <label>
+                        Product Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="productName"
+                        placeholder="e.g. Raspberry Pi 5"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- CATEGORY + QUANTITY -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Category
+                        </label>
+
+                        <input
+                            type="text"
+                            id="productCategory"
+                            placeholder="Electronics"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Quantity
+                        </label>
+
+                        <input
+                            type="number"
+                            id="productQuantity"
+                            min="0"
+                            step="1"
+                            placeholder="0"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PRICE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Price (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="productPrice"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- FORM BUTTONS -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="cancel-btn"
+                        onclick="closeModal()"
+                    >
+                        Cancel
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-btn"
+                    >
+                        Save Product
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
